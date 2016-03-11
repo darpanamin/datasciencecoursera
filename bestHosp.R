@@ -5,7 +5,7 @@ best <- function(state, outcome) {
   ## rate
   outcomeValid <- outcome %in% colnames(hospDat)
   filepath <- file.path(getwd(),"R","outcome-of-care-measures.csv")
-  hospDat <- read.csv(filepath, colClasses = "character")
+  hospDat <- read.csv(filepath, colClasses = "character",stringsAsFactors=FALSE,na.strings="Not Available")
   
   stateValid <- state %in% hospDat$State
   validOutcome <- c("heart attack", "heart failure", "pneumonia")
@@ -25,7 +25,8 @@ best <- function(state, outcome) {
   } else {stop("invalid outcome")}
 
   outcomeData <- hospDat[with(hospDat, State == state),c("Hospital.Name","City",outcomeCol) ]
-  t <- outcomeData[outcomeData[,3] != "Not Available",]
-  orderedRes <- t[order(t[,3],t[,1]),]
-  return(orderedRes)
+  suppressWarnings(transform(outcomeData, outcomeCol = as.numeric(outcomeCol)))
+  t <- na.omit(outcomeData)
+  orderedRes <- t[order(as.numeric(t[,3]),t[,1]),]
+  return(orderedRes[1,1])
 }
