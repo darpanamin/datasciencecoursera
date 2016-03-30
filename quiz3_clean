@@ -1,0 +1,2 @@
+fileURL <- c("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv")
+t<-read.csv(fileURL,stringsAsFactors = FALSE)
