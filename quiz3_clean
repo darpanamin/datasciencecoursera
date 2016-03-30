@@ -3,3 +3,13 @@ t<-read.csv(fileURL,stringsAsFactors = FALSE)
 agricultureLogical <-t[which(t$ACR == 3 & t$AGS == 6),] ## don't use
 
 agricultureLogical<- t$ACR == 3 & t$AGS == 6
+#1. 125, 238,262
+
+install.packages("jpeg")
+library(jpeg)
+fileURL <-c("https://d396qusza40orc.cloudfront.net/getdata%2Fjeff.jpg")
+download.file(fileURL,"sample_jpeg.jpeg")
+picPath <- c("./Rstuff/getdata-jeff.jpg")
+j<-readJPEG(picPath,native=TRUE)
+quantile(j,probs=c(0.3,0.8))
+#2. -15259150 -10575416
