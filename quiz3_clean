@@ -27,3 +27,14 @@ d7<-arrange(d6, desc(as.integer(d6$gdpRank)))
 d7[13,]
 
 #3: 189, st.kitts
+d4<-select(d3,c(1,2,4,5,12))
+d5 <- filter(d4, d4$Gross.domestic.product.2012 > 0)
+d6<-mutate(d5,gdpRank = as.integer(d5$Gross.domestic.product.2012))
+mean(d6[d6$Income.Group == "High income: OECD", "gdpRank" ])
+
+#4: 32.96667, 91.91304
+
+lm <- d6[d6$Income.Group == "Lower middle income", "gdpRank" ]
+ lm[lm<39]
+
+#5: 5
