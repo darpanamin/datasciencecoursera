@@ -9,6 +9,7 @@ install.packages("jpeg")
 library(jpeg)
 fileURL <-c("https://d396qusza40orc.cloudfront.net/getdata%2Fjeff.jpg")
 download.file(fileURL,"sample_jpeg.jpeg")
+## download.file(fileurl2, dst2, mode = 'wb', method = 'curl') ##try
 picPath <- c("./Rstuff/getdata-jeff.jpg")
 j<-readJPEG(picPath,native=TRUE)
 quantile(j,probs=c(0.3,0.8))
@@ -18,12 +19,15 @@ fileURL<- c("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv")
 fileURL2<- c("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv")
 gdp<-read.csv(fileURL,stringsAsFactors = FALSE)
 edu<-read.csv(fileURL2,stringsAsFactors = FALSE)
+## gdp = fread(dst3a, skip=4, nrows = 190, select = c(1, 2, 4, 5), col.names=c("CountryCode", "Rank", "Economy", "Total"))
+## edu = fread(dst3b)
 
 d3<-merge(gdp,edu,by.x="X",by.y="CountryCode", all=FALSE)
 d4<-select(d3,c(1,2,4,5))
 d5 <- filter(d4, d4$Gross.domestic.product.2012 > 0)
 d6<-mutate(d5,gdpRank = as.numeric(d5$Gross.domestic.product.2012))
 d7<-arrange(d6, desc(as.integer(d6$gdpRank)))
+## arrange(merge, desc(Rank))[13, Economy]
 d7[13,]
 
 #3: 189, st.kitts
@@ -31,6 +35,7 @@ d4<-select(d3,c(1,2,4,5,12))
 d5 <- filter(d4, d4$Gross.domestic.product.2012 > 0)
 d6<-mutate(d5,gdpRank = as.integer(d5$Gross.domestic.product.2012))
 mean(d6[d6$Income.Group == "High income: OECD", "gdpRank" ])
+##tapply(merge$Rank, merge$`Income Group`, mean)
 
 #4: 32.96667, 91.91304
 
