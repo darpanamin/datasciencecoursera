@@ -1,0 +1,41 @@
+# ENSEMBLING THE LEAKED SUBMISSION
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import os
+print(os.listdir("../input"))
+
+# THE BEST_KERNEL submission rounded to greater decimals mimicing the target values in train.
+
+# https://www.kaggle.com/tezdhar/breaking-lb-fresh-start, LB 0.69
+BEST_69 = pd.read_csv("../input/public-kernel-submissions-santander-value-2018/baseline_submission_with_leaks.csv")
+# ？
+ROUNED_MIN2 = pd.read_csv("../input/public-kernel-submissions-santander-value-2018/baseline_submission_with_leaks_ROUNDED_MINUS2.csv")
+
+# https://www.kaggle.com/johnfarrell/baseline-with-lag-select-fake-rows-dropped, LB: 0.69
+NOFAKE = pd.read_csv("../input/public-kernel-submissions-santander-value-2018/non_fake_sub_lag_29.csv")
+
+# https://www.kaggle.com/ogrellier/feature-scoring-vs-zeros/output, xgb, LB 0.66
+XGB = pd.read_csv("../input/public-kernel-submissions-santander-value-2018/leaky_submission.csv")
+
+# https://www.kaggle.com/the1owl/love-is-the-answer/output?scriptVersionId=4733381, 0.63
+BLEND04 = pd.read_csv("../input/public-kernel-submissions-santander-value-2018/blend04.csv") 
+
+CORR = pd.DataFrame()
+CORR['BEST_69'] = BEST_69.target
+CORR['ROUNED_MIN2'] = ROUNED_MIN2.target
+CORR['NOFAKE'] = NOFAKE.target
+CORR['XGB'] = XGB.target
+CORR['BLEND04'] = BLEND04.target
+print(CORR.corr())
+#              BEST_69      ROUNED_MIN2  NOFAKE      XGB     BLEND04
+# BEST_69      1.000000     0.955497 	 0.491216  0.568647  0.854658
+# ROUNED_MIN2  0.955497     1.000000  	 0.477915  0.558319  0.839026
+# NOFAKE       0.491216     0.477915 	 1.000000  0.775358  0.773887
+# XGB          0.568647     0.558319  	 0.775358  1.000000  0.907302
+# BLEND04      0.854658     0.839026  	 0.773887  0.907302  1.000000
+
+ENS_LEAKS = BEST_69.copy()
+
+ENS_LEAKS.target = 0.35 * ((0.7 * (0.7 * CORR['BEST_69'] + 0.3 * CORR['ROUNED_MIN2']) + 0.3 * CORR['NOFAKE'])) + 0.65 * (0.7 * CORR['BLEND04'] + 0.3 * CORR['XGB'])
+ENS_LEAKS.target.loc[NOFAKE.target==0.0] = 0.0
+ENS_LEAKS.to_csv("ENS_LEAKS.csv", index=None)
